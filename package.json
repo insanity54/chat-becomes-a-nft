@@ -1,0 +1,33 @@
+{
+  "name": "typografnft",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/insanity54/typografnft",
+  "author": "Chris Grimmett <chris@grimtech.net>",
+  "license": "Unlicense",
+  "private": true,
+  "dependencies": {
+    "@faker-js/faker": "^7.3.0",
+    "@kkirbatski/parcel-resolver-require-resolve": "^1.0.4",
+    "@openfonts/josefin-sans_all": "^1.0.1",
+    "@openzeppelin/contracts": "^4.7.0",
+    "dom-to-image": "^2.6.0",
+    "file-saver": "^2.0.5",
+    "html2canvas": "^1.4.1",
+    "ipfs-car": "^0.7.0",
+    "nft.storage": "^6.4.0",
+    "tmi.js": "^1.8.5",
+    "web3.storage": "^4.3.0"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.6",
+    "@parcel/transformer-sass": "2.6.2",
+    "dotenv": "^16.0.1",
+    "ethers": "^5.6.9",
+    "hardhat": "^2.9.9",
+    "parcel": "^2.6.2"
+  },
+  "scripts": {
+    "dev": "yarn parcel serve ./src/index.html"
+  }
+}
