@@ -1,3 +1,4 @@
+
 // scripts/deploy.js
 async function main () {
   // We get the contract to deploy

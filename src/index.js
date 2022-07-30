@@ -4,7 +4,8 @@ import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
 import tmi from 'tmi.js';
 import { NFTStorage, Blob } from 'nft.storage';
-import { Web3Storage } from 'web3.storage/dist/bundle.esm.min'
+import { Web3Storage } from 'web3.storage';
+
 
 
 const fonts = [
@@ -25,10 +26,12 @@ let messageBuffer = [];
 
 const chatAuthToken = localStorage.getItem('chatAuthToken');
 const twitchChannel = localStorage.getItem('twitchChannel');
-const tatumApiKey = localStorage.getItem('tatumApiKey');
 const nftStorageApiKey = localStorage.getItem('nftStorageApiKey');
+const contractAddress = process.env.CONTRACTADDRESS;
 const debug = localStorage.getItem('debug');
 const body = document.querySelector('body');
+const relayApiKey = localStorage.getItem('relayApiKey');
+const relayApiSecret = localStorage.getItem('relayApiSecret');
 
 
 
@@ -48,8 +51,10 @@ const createNotif = (msg) => {
 // show a notification if a required config value is missing
 if (!chatAuthToken) createNotif('chatAuthToken is missing from localStorage, but it is required.');
 if (!twitchChannel) createNotif('twitchChannel is missing from localStorage, but it is required.');
-if (!tatumApiKey) createNotif('tatumApiKey is missing from localStorage, but it is required.');
-if (!nftStorageApiKey) createNotif('nftStorageApiKey is missing from localStorage, but it is required.')
+if (!nftStorageApiKey) createNotif('nftStorageApiKey is missing from localStorage, but it is required.');
+if (!contractAddress) createNotif('contractAddress is missing from localStorage, but it is required.');
+if (!relayApiKey) createNotif('relayApiKey is missing from localStorage, but it is required.');
+if (!relayApiSecret) createNotif('relayApiSecret is missing from localStorage, but it is required.');
 if (debug === null) localStorage.setItem('debug', false);
 
 
@@ -80,10 +85,17 @@ client.on('message', (channel, tags, message, self) => {
     } else {
         messageBuffer.push(message);
     }
-
-
 });
 
+
+
+// const credentials = { apiKey: relayApiKey, apiSecret: relayApiSecret };
+// const provider = new DefenderRelayProvider(credentials);
+// const signer = new DefenderRelaySigner(credentials, provider, { speed: 'fast' });
+
+// const erc20 = new ethers.Contract(contractAddress, ERC20_ABI, signer);
+// const tx = await erc20.transfer(beneficiary, 1e18.toString());
+// const mined = await tx.wait();
 
 
 // get random int
@@ -114,11 +126,54 @@ const isOverflown = (el) => {
    return (el.parentElement.clientHeight < el.scrollHeight);
 }
 
+
+// const async function mintNft({
+//   logo,
+//   filePath,
+//   name = "",
+//   description = "",
+// }: {
+//   logo: MyAwesomeLogo;
+//   filePath: string;
+//   name?: string;
+//   description?: string;
+// }) {
+//   console.log("Minting NFT", { filePath, name, description });
+//   const file = readFileSync(filePath);
+
+//   const metaData = await uploadFile({
+//     file: new File([file.buffer], name, {
+//       type: "image/png", // image/png
+//     }),
+//     name,
+//     description,
+//   });
+
+//   console.log("Uploaded file to nft storage", metaData);
+
+//   // mint nft
+//   const mintTx = await logo.safeMint(OWNER, metaData?.url);
+//   // wait until the transaction is mined
+//   const tx = await mintTx.wait();
+//   console.log("Minted NFT", tx.blockHash);
+// }
+
+
 const mintNft = async (ipfsImageUrl) => {
 
-    
 
-    console.log(`  MINT`);
+    console.log(`  [*] MINTING`);
+    const mint = await ChatBecomesANFT.safeMint(OWNER, ipfsImageUrl);
+    const tx = await mint.wait();
+
+
+    // We get the contract to deploy
+    const ChatBecomesANFT = await hre.ethers.getContractFactory("ChatBecomesANFT");
+    const logo = await ChatBecomesANFT.attach(CONTRACT_ADDRESS);
+
+
+
+
     // client.say(twitchChannel, `NFT Minted! ${url}`);
 }
 
@@ -133,6 +188,7 @@ const getScreenshot = async (el) => {
     // await saveAs(canvas.toDataURL(), `typografNFT_${Date.now()}.png`);
 
 }
+
 
 
 const getBlobFromCanvas = async (canvas) => {
